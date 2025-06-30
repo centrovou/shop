@@ -18,7 +18,7 @@ const { id, imageUrl, title, price } = defineProps({
     >
       <img
         class="absolute top-7 left-5"
-        :src="!isFavorite ? '/like-1.svg' : '/like-2.svg'"
+        :src="!isFavorite ? 'like-1.svg' : 'like-2.svg'"
         alt="like"
         @click="onClickFavorite"
       />
@@ -29,7 +29,7 @@ const { id, imageUrl, title, price } = defineProps({
           <span class="text-slate-400">Цена:</span>
           <span class="font-bold">{{ price }} руб.</span>
         </div>
-        <img @click="onClickAdd" :src="!isAdded ? '/plus.svg' : '/checked.svg'" alt="ЯЧС" />
+        <img @click="onClickAdd" :src="!isAdded ? 'plus.svg' : 'checked.svg'" alt="ЯЧС" />
       </div>
     </div>
   </div>
