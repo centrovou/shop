@@ -1,22 +1,120 @@
 <script setup>
-import { ref } from 'vue';
-Card;
+import { onMounted, provide, reactive, ref, watch } from 'vue';
+import axios from 'axios';
 import Header from './components/Header.vue';
-import Card from './components/Card.vue';
 import CardList from './components/CardList.vue';
 import Drawer from './components/Drawer.vue';
+
+const items = ref([]);
+
+const filters = reactive({
+  sortBy: 'title',
+  searchQueryInput: '',
+});
+const onChangeSelect = (event) => {
+  filters.sortBy = event.target.value;
+};
+const onChangeSearchInput = (event) => {
+  filters.searchQueryInput = event.target.value;
+};
+
+const addtoFavorite = async (item) => {
+  try {
+    if (!item.isFavorite) {
+      const obj = {
+        parentId: item.id,
+      };
+      item.isFavorite = true;
+      const { data } = await axios.post('https://4bf6bdcf6597d96e.mokky.dev/favorites', obj);
+
+      item.favoriteId = data.id;
+    } else {
+      item.isFavorite = false;
+      await axios.delete(`https://4bf6bdcf6597d96e.mokky.dev/favorites/${item.favoriteId}`);
+
+      item.favoriteId = null;
+    }
+  } catch (error) {
+    console.log('ошибка API addtoFavorite', error);
+  }
+};
+
+const fetchFavorites = async () => {
+  try {
+    const { data: favorites } = await axios.get('https://4bf6bdcf6597d96e.mokky.dev/favorites');
+    items.value = items.value.map((item) => {
+      const favorite = favorites.find((favorite) => favorite.parentId === item.id);
+      if (!favorite) {
+        return item;
+      }
+
+      return {
+        ...item,
+        isFavorite: false, //состояние избранного
+        favoriteId: null,
+        favoriteId: favorite.id, //бек id
+      };
+    });
+  } catch (error) {
+    console.log('ошибка API favorites', error);
+  }
+};
+const fetchItems = async () => {
+  try {
+    const params = {
+      sortBy: filters.sortBy,
+    };
+
+    if (filters.searchQueryInput) {
+      params.title = `*${filters.searchQueryInput}*`;
+    }
+    const { data } = await axios.get('https://4bf6bdcf6597d96e.mokky.dev/items', {
+      params,
+    });
+    items.value = data.map((obj) => ({
+      ...obj,
+      isFavorite: false,
+      isAdded: false,
+    })); // обновляем данные
+  } catch (error) {
+    console.log('ошибка API items', error);
+  }
+};
+
+onMounted(async () => {
+  await fetchItems();
+  await fetchFavorites();
+});
+watch(filters, fetchItems);
+provide('addtoFavorite', addtoFavorite);
 </script>
 
 <template>
-  <Drawer />
+  <!--  <Drawer /> -->
   <div class="w-3/4 m-auto bg-white rounded-xl shadow-xl mt-10">
     <Header />
     <div class="p-10">
       <div class="flex justify-between mb-14.5">
         <h2 class="text-3xl font-bold">Все кроссовки</h2>
-        <input type="text" placeholder="Поиск..." />
+
+        <div class="flex gap-5">
+          <select @change="onChangeSelect" class="py-2 px-3 border border-gray-200 rounded-md">
+            <option value="name">По названию</option>
+            <option value="price">По Цене (дешевые)</option>
+            <option value="-price">По Цене (дорогие)</option>
+          </select>
+          <div class="relative">
+            <img class="absolute left-[14px] top-[15px]" src="/search.svg" alt="" />
+            <input
+              @input="onChangeSearchInput"
+              class="border border-gray-200 rounded-md pl-[40px] py-[10px] px-[20px] outline-none focus:border-gray-400"
+              type="text"
+              placeholder="Поиск..."
+            />
+          </div>
+        </div>
       </div>
-      <CardList />
+      <CardList :items="items" @addtoFavorite="addtoFavorite" />
     </div>
   </div>
 </template>
