@@ -5,6 +5,5 @@
 - TailwindCSS
 - Axios
 - @formkit/auto-animate
-- Composition API / Options API
-- ESLint
-- Prettier
+- Composition API
+
