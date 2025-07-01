@@ -2,15 +2,14 @@
 import { inject } from 'vue';
 import Card from './Card.vue';
 
-let { items } = defineProps({ items: Array });
+let { items, isFavoritesShow } = defineProps({ items: Array, isFavoritesShow: Boolean });
 
 const emit = defineEmits(['addtoFavorite', 'addToCart']);
-
 </script>
 
 <template>
   <div>
-    <div class="flex gap-x-[59px] justify-start flex-wrap">
+    <div class="flex gap-x-[59px] justify-start flex-wrap" v-auto-animate>
       <Card
         v-for="item in items"
         :key="item.id"
@@ -19,10 +18,12 @@ const emit = defineEmits(['addtoFavorite', 'addToCart']);
         :title="item.title"
         :price="item.price"
         :isAdded="item.isAdded"
-        :onClickAdd="() => emit('addToCart', item)"
-        :onClickFavorite="() => emit('addtoFavorite', item)"
+        :onClickAdd="isFavoritesShow ? null : () => emit('addToCart', item)"
+        :onClickFavorite="isFavoritesShow ? null : () => emit('addtoFavorite', item)"
         :isFavorite="item.isFavorite"
-      />
+        :showFavoriteButton="!isFavoritesShow"
+      </Card>
+    
     </div>
   </div>
 </template>
