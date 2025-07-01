@@ -4,11 +4,15 @@ import axios from 'axios';
 import Header from './components/Header.vue';
 import Drawer from './components/Drawer.vue';
 import Home from './pages/Home.vue';
+import Banner from './components/Banner.vue';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
 
 const drawerOpen = ref(false);
 const cart = ref([]); //список товаров в корзине
 const isCreateOrder = ref(false);
-
+const isHomePage = computed(() => route.path === '/');
 const createOrder = async (item) => {
   try {
     isCreateOrder.value = true;
@@ -82,6 +86,7 @@ watch(
   <div class="w-3/4 m-auto bg-white rounded-xl shadow-xl mt-10">
     <Header :totalPrice="totalPrice" @openDrawer="openDrawer" />
     <div class="p-10">
+      <Banner v-if="isHomePage" />
       <router-view></router-view>
     </div>
   </div>
