@@ -7,9 +7,9 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 
 const slides = [
-  '../../public/banner/zxc.jpg',
-  '../../public/banner/zxc.jpg',
-  '../../public/banner/zxc.jpg',
+  '/banner/zxc.jpg',
+  '/banner/zxc.jpg', 
+  '/banner/zxc.jpg'
 ];
 const modules = [Navigation];
 </script>
