@@ -1,5 +1,5 @@
 <script setup>
-const { id, imageUrl, title, price } = defineProps({
+const { id, imageUrl, title, price, onClickAdd } = defineProps({
   id: Number,
   imageUrl: String,
   title: String,
